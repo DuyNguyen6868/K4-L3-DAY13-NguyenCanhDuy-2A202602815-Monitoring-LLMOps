@@ -36,6 +36,17 @@ def get_langfuse_client():
     return get_client()
 
 
+# Child observations (retrieval, generation) are updated through the SDK's global
+# client, the one @observe opened them on. The agent's injectable client only has
+# to support the root-span calls (get_prompt, update_current_span).
+def update_current_observation(**kwargs: Any) -> None:
+    get_client().update_current_span(**kwargs)
+
+
+def update_current_generation(**kwargs: Any) -> None:
+    get_client().update_current_generation(**kwargs)
+
+
 def tracing_enabled() -> bool:
     return LANGFUSE_SDK_AVAILABLE and bool(
         os.getenv("LANGFUSE_PUBLIC_KEY") and os.getenv("LANGFUSE_SECRET_KEY")

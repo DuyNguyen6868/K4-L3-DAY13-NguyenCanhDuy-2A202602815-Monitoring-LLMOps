@@ -21,7 +21,19 @@ Giữ time range mặc định 60 phút, refresh 30 giây và hiển thị thres
 
 1. Hoàn thiện logging/PII và chạy API.
 2. Chạy `python scripts/load_test.py --concurrency 5` để tạo baseline.
-3. Dùng `data/logs.jsonl` làm nguồn chuẩn để tạo đúng sáu panel bằng Streamlit, notebook, Grafana hoặc công cụ tương đương. Langfuse vẫn là nơi mở trace/prompt version để điều tra sâu.
+3. Sinh dashboard local từ contract và structured logs:
+
+```powershell
+python scripts/dashboard.py
+```
+
+Mở `data/dashboard.html` trong trình duyệt. Để giữ dashboard cập nhật khi log mới đến, chạy watcher ở terminal riêng rồi mở lại file:
+
+```powershell
+python scripts/dashboard.py --watch
+```
+
+Watcher đọc lại log và ghi HTML mỗi `refresh_seconds` giây trong `config/dashboard.yaml`; trang tự tải lại theo cùng chu kỳ. Dashboard chỉ nhúng số liệu tổng hợp, không chép payload hay nội dung request. Langfuse vẫn là nơi mở trace/prompt version để điều tra sâu.
 4. Đặt tên panel, đơn vị và threshold giống contract.
 5. Chạy validator:
 
@@ -40,4 +52,4 @@ Validator kiểm tra cấu trúc contract; nó không thể chứng minh biểu 
 5. Lọc log chậm, lấy correlation ID rồi mở trace có cùng ID.
 6. Tắt incident bằng `python scripts/inject_incident.py --scenario rag_slow --disable`.
 
-Ảnh dashboard phải nhìn được tên panel, time range, đơn vị và threshold. Báo cáo phải dẫn lại trace ID hoặc log line dùng để giải thích thay đổi.
+Ảnh dashboard phải nhìn được tên panel, time range, đơn vị và threshold. Báo cáo phải dẫn lại trace ID hoặc log line dùng để giải thích thay đổi. Chi phí được vẽ dạng cộng dồn theo cửa sổ để so sánh trực tiếp với ngưỡng tổng.

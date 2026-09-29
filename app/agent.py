@@ -3,13 +3,21 @@ from __future__ import annotations
 import os
 import time
 from dataclasses import dataclass
+from datetime import datetime, timedelta, timezone
 
 from . import metrics
-from .mock_llm import FakeLLM
+from .mock_llm import FakeLLM, FakeResponse
 from .mock_rag import retrieve
 from .pii import hash_user_id, summarize_text
 from .prompt_management import resolve_prompt
-from .tracing import get_langfuse_client, observe, propagate_attributes, tracing_enabled
+from .tracing import (
+    get_langfuse_client,
+    observe,
+    propagate_attributes,
+    tracing_enabled,
+    update_current_generation,
+    update_current_observation,
+)
 
 
 @dataclass
@@ -51,7 +59,7 @@ class LabAgent:
             },
         ):
             started = time.perf_counter()
-            docs = retrieve(message)
+            docs = self._retrieve(message)
             prompt = resolve_prompt(
                 langfuse_client,
                 feature=feature,
@@ -71,10 +79,10 @@ class LabAgent:
                 },
                 version=prompt.version,
             )
-            # TODO (CP2): instrument retrieve() and FakeLLM.generate() as child
-            # observations. The nested generation must receive prompt, usage and cost.
+            # The generation must be created inside this context: Langfuse links the
+            # prompt version only to generation-type observations started here.
             with propagate_attributes(prompt=prompt.managed_prompt):
-                response = self.llm.generate(prompt.text)
+                response = self._generate(prompt.text)
             quality_score = self._heuristic_quality(message, response.text, docs)
             latency_ms = int((time.perf_counter() - started) * 1000)
             cost_usd = self._estimate_cost(response.usage.input_tokens, response.usage.output_tokens)
@@ -98,10 +106,38 @@ class LabAgent:
             quality_score=quality_score,
         )
 
-    def _estimate_cost(self, tokens_in: int, tokens_out: int) -> float:
+    @observe(name="retrieval", as_type="retriever", capture_input=False, capture_output=False)
+    def _retrieve(self, message: str) -> list[str]:
+        # Only a scrubbed preview and a count leave the process, never the raw query.
+        update_current_observation(input={"query_preview": summarize_text(message)})
+        docs = retrieve(message)
+        update_current_observation(output={"doc_count": len(docs)})
+        return docs
+
+    @observe(name="llm-generation", as_type="generation", capture_input=False, capture_output=False)
+    def _generate(self, prompt_text: str) -> FakeResponse:
+        started_at = datetime.now(timezone.utc)
+        response = self.llm.generate(prompt_text)
+        usage = response.usage
+        update_current_generation(
+            model=response.model,
+            usage_details={"input": usage.input_tokens, "output": usage.output_tokens},
+            cost_details=self._cost_breakdown(usage.input_tokens, usage.output_tokens),
+            completion_start_time=started_at + timedelta(milliseconds=response.ttft_ms),
+        )
+        return response
+
+    def _cost_breakdown(self, tokens_in: int, tokens_out: int) -> dict[str, float]:
         input_cost = (tokens_in / 1_000_000) * 3
         output_cost = (tokens_out / 1_000_000) * 15
-        return round(input_cost + output_cost, 6)
+        return {
+            "input": round(input_cost, 6),
+            "output": round(output_cost, 6),
+            "total": round(input_cost + output_cost, 6),
+        }
+
+    def _estimate_cost(self, tokens_in: int, tokens_out: int) -> float:
+        return self._cost_breakdown(tokens_in, tokens_out)["total"]
 
     def _heuristic_quality(self, question: str, answer: str, docs: list[str]) -> float:
         score = 0.5

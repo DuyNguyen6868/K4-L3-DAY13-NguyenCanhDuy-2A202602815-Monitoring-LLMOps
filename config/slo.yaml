@@ -3,11 +3,15 @@ primary_slo:
   name: fast_successful_requests
   window: 28d
   sli:
-    good_event: 'event == "response_sent" and latency_ms <= 3000'
+    good_event: 'event == "response_sent" and latency_ms <= 2000'
     total_event: 'event == "request_received"'
   target_percent: 99.5
   error_budget_percent: 0.5
-  note: Học viên phải giải thích hoặc điều chỉnh ngưỡng bằng baseline của mình.
+  note: >-
+    Provisional 2s latency objective: it is above the observed normal P95 of about
+    1.6s and below the rag_slow injected delay (2.5s plus request overhead). Verify
+    against a fresh normal and rag_slow run before final submission. The dashboard
+    contract threshold remains 3s; this SLO is intentionally more proactive.
 guardrails:
   error_rate_pct_max: 2
   daily_cost_usd_max: 2.5
