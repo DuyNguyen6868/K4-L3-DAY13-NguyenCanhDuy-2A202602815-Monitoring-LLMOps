@@ -8,9 +8,10 @@ primary_slo:
   target_percent: 99.5
   error_budget_percent: 0.5
   note: >-
-    Provisional 2s latency objective: it is above the observed normal P95 of about
-    1.6s and below the rag_slow injected delay (2.5s plus request overhead). Verify
-    against a fresh normal and rag_slow run before final submission. The dashboard
+    2s latency objective, checked against logged latency_ms on 2026-09-29: the CP0
+    baseline P95 was 1556 ms, normal runs after instrumentation stay at P95 152-173 ms,
+    and rag_slow requests take about 2655 ms (retrieval span 2.5s). A first request
+    after a restart can reach 1.3-2.2s and counts against the budget. The dashboard
     contract threshold remains 3s; this SLO is intentionally more proactive.
 guardrails:
   error_rate_pct_max: 2
