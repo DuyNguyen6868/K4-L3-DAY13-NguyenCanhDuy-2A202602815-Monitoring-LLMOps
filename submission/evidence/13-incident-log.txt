@@ -1,0 +1,42 @@
+# Thời điểm chạy: 2026-09-29 23:15:14 (UTC+7)
+# Commit: f03157f
+# Nguồn: data/logs.jsonl (ts là UTC; 15:11 UTC = 22:11 UTC+7)
+
+# Lệnh 1 (PowerShell): các request quanh incident, nằm giữa incident_enabled và incident_disabled
+Get-Content data\logs.jsonl | Where-Object { $_ -like '*"ts": "2026-09-29T15:*' -and $_ -match '"event": "(response_sent|incident_enabled|incident_disabled)"' } | ConvertFrom-Json | Select-Object ts, event, correlation_id, feature, latency_ms, ttft_ms, tokens_out, tool_success | Format-Table -AutoSize
+
+ts                          event             correlation_id feature    latency_ms ttft_ms tokens_out tool_success
+--                          -----             -------------- -------    ---------- ------- ---------- ------------
+2026-09-29T15:09:41.611072Z response_sent     req-d64fc8fe   qa               1347      50        135         True
+2026-09-29T15:09:41.773739Z response_sent     req-47c0d52b   qa                154      50        166         True
+2026-09-29T15:09:41.931644Z response_sent     req-d7c68f79   summary           153      50         90         True
+2026-09-29T15:09:42.087726Z response_sent     req-037099ec   qa                151      50         93         True
+2026-09-29T15:09:42.245098Z response_sent     req-73249047   qa                153      50        143         True
+2026-09-29T15:09:42.406685Z response_sent     req-d473eead   summary           154      50        128         True
+2026-09-29T15:09:42.569749Z response_sent     req-fa80bb26   qa                156      50         95         True
+2026-09-29T15:09:42.726218Z response_sent     req-c2e38cac   qa                153      50        104         True
+2026-09-29T15:09:42.887707Z response_sent     req-bc39225c   qa                153      50        161         True
+2026-09-29T15:09:43.043786Z response_sent     req-a3c90c2b   qa                152      50        143         True
+2026-09-29T15:11:24.508420Z incident_enabled  req-5e93f2dc                                                        
+2026-09-29T15:11:36.413743Z response_sent     req-bd70f477   monitoring       2654      50        104         True
+2026-09-29T15:11:39.075833Z response_sent     req-3e8c43aa   monitoring       2654      50        179         True
+2026-09-29T15:11:41.732735Z response_sent     req-5d28767c   monitoring       2655      50        117         True
+2026-09-29T15:11:44.395376Z response_sent     req-d0485d29   monitoring       2654      50         99         True
+2026-09-29T15:11:47.054661Z response_sent     req-c4758e7f   monitoring       2654      50        111         True
+2026-09-29T15:11:50.751332Z incident_disabled req-635b1bbf                                                        
+2026-09-29T15:13:50.788019Z response_sent     req-0cc04bd4   summary           152      50         83         True
+2026-09-29T15:13:50.945847Z response_sent     req-0c567554   qa                152      50        116         True
+2026-09-29T15:13:51.100834Z response_sent     req-f92c4a69   qa                152      50        149         True
+2026-09-29T15:13:51.277590Z response_sent     req-80e3abd9   qa                173      50        104         True
+2026-09-29T15:13:51.496426Z response_sent     req-7d5df84e   qa                152      50        175         True
+2026-09-29T15:13:51.654977Z response_sent     req-7630bfc8   summary           152      50        175         True
+2026-09-29T15:13:51.813264Z response_sent     req-2afc732d   qa                153      50        123         True
+2026-09-29T15:13:51.974615Z response_sent     req-294bdcf9   qa                153      50        164         True
+2026-09-29T15:13:52.132393Z response_sent     req-4f79055a   qa                153      50        141         True
+2026-09-29T15:13:52.287309Z response_sent     req-f60dbdac   qa                152      50        104         True
+
+# Lệnh 2 (PowerShell): log line gốc của correlation_id req-5d28767c
+Select-String -Path data\logs.jsonl -Pattern 'req-5d28767c' | ForEach-Object Line
+
+{"service": "api", "payload": {"message_preview": "Which signal should be checked after latency increases?"}, "event": "request_received", "env": "dev", "model": "claude-sonnet-4-5", "user_id_hash": "4570299f37e2", "session_id": "k4-l3a-challenge-s04", "feature": "monitoring", "correlation_id": "req-5d28767c", "level": "info", "ts": "2026-09-29T15:11:39.076913Z"}
+{"service": "api", "latency_ms": 2655, "ttft_ms": 50, "tokens_in": 36, "tokens_out": 117, "cost_usd": 0.001863, "quality_score": 0.9, "tool_name": "retrieval", "tool_success": true, "payload": {"answer_preview": "Starter answer. You should improve this output logic and add better quality chec..."}, "event": "response_sent", "env": "dev", "model": "claude-sonnet-4-5", "user_id_hash": "4570299f37e2", "session_id": "k4-l3a-challenge-s04", "feature": "monitoring", "correlation_id": "req-5d28767c", "level": "info", "ts": "2026-09-29T15:11:41.732735Z"}
