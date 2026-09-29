@@ -1,0 +1,15 @@
+# Thời điểm chạy: 2026-09-29 15:59:40 (UTC+7)
+# Commit: 13b6066 | file tracked đang sửa: M .gitignore
+# Lệnh: python scripts/load_test.py
+# Exit code: 0
+
+[200] MISSING | qa | 2089.7ms
+[200] MISSING | qa | 457.1ms
+[200] MISSING | summary | 688.8ms
+[200] MISSING | qa | 554.6ms
+[200] MISSING | qa | 584.0ms
+[200] MISSING | summary | 541.7ms
+[200] MISSING | qa | 488.8ms
+[200] MISSING | qa | 423.5ms
+[200] MISSING | qa | 569.8ms
+[200] MISSING | qa | 500.2ms

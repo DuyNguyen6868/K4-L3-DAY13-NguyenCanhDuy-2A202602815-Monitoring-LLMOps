@@ -1,0 +1,19 @@
+# Thời điểm chạy: 2026-09-29 16:00:00 (UTC+7)
+# Commit: 13b6066 | file tracked đang sửa: M .gitignore
+# Lệnh: python scripts/validate_logs.py
+# Exit code: 0
+
+--- Lab Verification Results ---
+Total log records analyzed: 21
+Records with missing required fields: 20
+Records with missing enrichment (context): 20
+Unique correlation IDs found: 0
+Potential PII leaks detected: 0
+
+--- Grading Scorecard (Estimates) ---
+- [FAILED] Missing required fields (ts, level, etc.)
+- [FAILED] Correlation ID propagation (less than 2 unique IDs)
+- [FAILED] Log enrichment (missing user_id_hash, etc.)
++ [PASSED] PII scrubbing
+
+Estimated Score: 30/100

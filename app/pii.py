@@ -3,12 +3,16 @@ from __future__ import annotations
 import hashlib
 import re
 
+# Applied in order. Email must stay first: if phone_vn ran first on
+# "an.nguyen.0987654321@vinuni.edu.vn", the email pattern would no longer match
+# and the name part would stay in the log.
 PII_PATTERNS: dict[str, str] = {
     "email": r"[\w\.-]+@[\w\.-]+\.\w+",
     "phone_vn": r"(?<!\d)(?:\+84|0)(?:[ .-]?\d){9}(?!\d)",
     "cccd": r"\b\d{12}\b",
     "credit_card": r"\b\d{4}[- ]?\d{4}[- ]?\d{4}[- ]?\d{4}\b",
-    # TODO: Add more patterns (e.g., Passport, Vietnamese address keywords)
+    # Vietnamese passport: one uppercase letter followed by 7 or 8 digits.
+    "passport": r"\b[A-Z]\d{7,8}\b",
 }
 
 

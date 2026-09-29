@@ -1,0 +1,15 @@
+# Thời điểm chạy: 2026-09-29 15:59:39 (UTC+7)
+# Commit: 13b6066 | file tracked đang sửa: M .gitignore
+# Lệnh: GET http://127.0.0.1:8000/health
+# Exit code: 0
+
+HTTP 200
+{
+  "ok": true,
+  "tracing_enabled": true,
+  "incidents": {
+    "rag_slow": false,
+    "tool_fail": false,
+    "cost_spike": false
+  }
+}
