@@ -8,7 +8,7 @@
 - **MSSV:** 2A202602815
 - **Lớp:** K4-L3A
 - **Repository URL:** https://github.com/DuyNguyen6868/K4-L3-DAY13-NguyenCanhDuy-2A202602815-Monitoring-LLMOps.git
-- **Commit SHA cuối:** `272afa01b8a945a3bb93000b7b435b89d5cef88c` (commit chứa code, REPORT và evidence; commit ngay sau đó chỉ ghi SHA này vào report)
+- **Commit SHA cuối:** `122431a611b43ddb95d03bb5f1f738011a2721a8` (commit chứa code, REPORT và evidence; commit ngay sau đó chỉ ghi SHA này vào report)
 - **Challenge ID:** `day13-k4-l3a-monitoring-llmops-v1` (cohort K4)
 - **Tên project Langfuse cá nhân:** `day13-k4-l3a-2A202602815`
 
